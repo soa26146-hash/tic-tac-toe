@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>لعبة إكس أو مع أسماء وترتيب - محمد المصري</title>
+  <title>لعبة إكس أو - محمد المصري</title>
   <style>
     body {
       margin: 0; padding: 0;
@@ -33,6 +33,7 @@
       padding: 20px;
       border-radius: 15px;
       box-shadow: 0 0 25px #7b40ff;
+      user-select: none;
     }
     .cell {
       width: 120px; height: 120px;
@@ -44,6 +45,7 @@
       cursor: pointer;
       box-shadow: 5px 5px 10px #151522, -5px -5px 10px #3a3a56;
       transition: all 0.3s ease;
+      user-select: none;
     }
     .cell:hover {
       color: #d18aff;
@@ -58,6 +60,7 @@
       text-align: center;
       font-weight: bold;
       text-shadow: 0 0 10px #d18aff;
+      user-select: none;
     }
     #resetBtn {
       margin-top: 20px;
@@ -71,15 +74,28 @@
       cursor: pointer;
       box-shadow: 0 5px 15px #d18aff;
       transition: background 0.3s ease;
+      user-select: none;
     }
     #resetBtn:hover {
       background: linear-gradient(135deg, #d18aff, #7b40ff);
       box-shadow: 0 8px 25px #7b40ff;
     }
+    #modeSelectContainer {
+      margin-top: 10px;
+      color: #d18aff;
+      font-weight: bold;
+      user-select: none;
+    }
+    #modeSelectContainer label {
+      margin-right: 15px;
+      cursor: pointer;
+      user-select: none;
+    }
     #levelSelectContainer {
-      margin-top: 15px;
+      margin-top: 10px;
       font-weight: bold;
       color: #d18aff;
+      user-select: none;
     }
     select {
       background: #2a2a3d;
@@ -94,6 +110,25 @@
       margin-left: 10px;
       user-select: none;
     }
+    #playerNameLabel {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #d18aff;
+      user-select: none;
+    }
+    #playerName {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: none;
+      width: 200px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 1rem;
+      background: #2a2a3d;
+      color: #eee;
+      box-shadow: inset 0 0 8px #7b40ff;
+      user-select: text;
+    }
     #leaderboard {
       margin-top: 30px;
       width: 300px;
@@ -103,6 +138,7 @@
       box-shadow: 0 0 25px #7b40ff;
       color: #d18aff;
       font-weight: bold;
+      user-select: none;
     }
     #leaderboard h2 {
       text-align: center;
@@ -129,33 +165,38 @@
   <h1>لعبة إكس أو</h1>
   <div id="developer">تطوير: محمد المصري</div>
 
-  <label for="playerName" style="font-weight:bold; margin-bottom:8px; color:#d18aff;">
+  <label id="playerNameLabel" for="playerName">
     أدخل اسمك (اللاعب X):
   </label>
-  <input id="playerName" type="text" placeholder="اكتب اسمك هنا" style="padding:8px 12px; border-radius:10px; border:none; width:200px; margin-bottom:15px; font-weight:bold; font-size:1rem; background:#2a2a3d; color:#eee; box-shadow: inset 0 0 8px #7b40ff;" />
+  <input id="playerName" type="text" placeholder="اكتب اسمك هنا" autocomplete="off"/>
 
-  <div id="board">
-    <div class="cell" data-index="0"></div>
-    <div class="cell" data-index="1"></div>
-    <div class="cell" data-index="2"></div>
-    <div class="cell" data-index="3"></div>
-    <div class="cell" data-index="4"></div>
-    <div class="cell" data-index="5"></div>
-    <div class="cell" data-index="6"></div>
-    <div class="cell" data-index="7"></div>
-    <div class="cell" data-index="8"></div>
+  <div id="modeSelectContainer" >
+    <label><input type="radio" name="mode" value="ai" checked /> ضد الكمبيوتر</label>
+    <label><input type="radio" name="mode" value="friend" /> ضد صديق</label>
   </div>
 
-  <div id="message">أدخل اسمك ثم ابدأ اللعب!</div>
-
   <div id="levelSelectContainer">
-    اختر مستوى الذكاء الاصطناعي: 
+    اختر مستوى الذكاء الاصطناعي:
     <select id="aiLevel">
       <option value="easy">سهل</option>
       <option value="medium" selected>متوسط</option>
       <option value="hard">صعب</option>
     </select>
   </div>
+
+  <div id="board">
+    <div class="cell" data-index="0" tabindex="0"></div>
+    <div class="cell" data-index="1" tabindex="0"></div>
+    <div class="cell" data-index="2" tabindex="0"></div>
+    <div class="cell" data-index="3" tabindex="0"></div>
+    <div class="cell" data-index="4" tabindex="0"></div>
+    <div class="cell" data-index="5" tabindex="0"></div>
+    <div class="cell" data-index="6" tabindex="0"></div>
+    <div class="cell" data-index="7" tabindex="0"></div>
+    <div class="cell" data-index="8" tabindex="0"></div>
+  </div>
+
+  <div id="message">أدخل اسمك ثم ابدأ اللعب!</div>
 
   <button id="resetBtn" disabled>إعادة اللعبة</button>
 
@@ -164,270 +205,312 @@
     <ul id="leaderboardList"></ul>
   </div>
 
-  <script>
-    const cells = document.querySelectorAll('.cell');
-    const message = document.getElementById('message');
-    const resetBtn = document.getElementById('resetBtn');
-    const aiLevelSelect = document.getElementById('aiLevel');
-    const playerNameInput = document.getElementById('playerName');
-    const leaderboardList = document.getElementById('leaderboardList');
+<script>
+  // عناصر
+  const cells = document.querySelectorAll('.cell');
+  const message = document.getElementById('message');
+  const resetBtn = document.getElementById('resetBtn');
+  const aiLevelSelect = document.getElementById('aiLevel');
+  const playerNameInput = document.getElementById('playerName');
+  const leaderboardList = document.getElementById('leaderboardList');
+  const modeRadios = document.querySelectorAll('input[name="mode"]');
 
-    let boardState = ['', '', '', '', '', '', '', '', ''];
-    let currentPlayer = 'X';
-    let gameActive = false; // ننتظر اسم اللاعب
-    let aiLevel = 'medium';
-    let playerName = '';
-    let leaderboard = {};
+  // حالة اللعبة
+  let boardState = ['', '', '', '', '', '', '', '', ''];
+  let currentPlayer = 'X';
+  let gameActive = false;
+  let playerName = '';
+  let leaderboard = {};
+  let mode = 'ai'; // ai or friend
+  let aiLevel = 'medium';
 
-    // تحميل بيانات الترتيب من localStorage
-    function loadLeaderboard() {
-      const data = localStorage.getItem('xo_leaderboard');
-      if (data) {
-        leaderboard = JSON.parse(data);
+  // أصوات بسيطة
+  const clickSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+  const winSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+  const drawSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+
+  function playSound(sound) {
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+  }
+
+  // تحميل بيانات الترتيب
+  function loadLeaderboard() {
+    const data = localStorage.getItem('xo_leaderboard');
+    leaderboard = data ? JSON.parse(data) : {};
+  }
+
+  // حفظ بيانات الترتيب
+  function saveLeaderboard() {
+    localStorage.setItem('xo_leaderboard', JSON.stringify(leaderboard));
+  }
+
+  // تحديث عرض الترتيب
+  function updateLeaderboardDisplay() {
+    loadLeaderboard();
+    const entries = Object.entries(leaderboard).sort((a,b) => b[1]-a[1]);
+    leaderboardList.innerHTML = '';
+    if(entries.length === 0) {
+      leaderboardList.innerHTML = '<li>لا توجد بيانات بعد</li>';
+      return;
+    }
+    entries.forEach(([name, wins]) => {
+      const li = document.createElement('li');
+      li.textContent = name;
+      const span = document.createElement('span');
+      span.textContent = `فوز: ${wins}`;
+      li.appendChild(span);
+      leaderboardList.appendChild(li);
+    });
+  }
+
+  // تحقق من فوز
+  function checkWinner(board, player) {
+    const winningConditions = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+    return winningConditions.some(condition =>
+      condition.every(idx => board[idx] === player)
+    );
+  }
+
+  // تحقق تعادل
+  function checkDraw(board) {
+    return board.every(cell => cell !== '');
+  }
+
+  // تحركات فارغة
+  function getAvailableMoves(board) {
+    return board.map((c,i) => c === '' ? i : null).filter(i => i !== null);
+  }
+
+  // خطوة اللاعب
+  function makeMove(idx, player) {
+    boardState[idx] = player;
+    cells[idx].textContent = player;
+    playSound(clickSound);
+  }
+
+  // إنهاء اللعبة
+  function gameOver(text) {
+    gameActive = false;
+    message.textContent = text;
+    playSound(winSound);
+  }
+
+  // تحريك الكمبيوتر حسب المستوى
+  function aiMove() {
+    if (!gameActive) return;
+
+    let move;
+
+    if (aiLevel === 'easy') {
+      const available = getAvailableMoves(boardState);
+      move = available[Math.floor(Math.random() * available.length)];
+    } else if (aiLevel === 'medium') {
+      move = findWinningMove(boardState, 'O');
+      if (move === null) {
+        move = findWinningMove(boardState, 'X');
+      }
+      if (move === null) {
+        const available = getAvailableMoves(boardState);
+        move = available[Math.floor(Math.random() * available.length)];
+      }
+    } else { // hard
+      move = minimax(boardState, 'O').index;
+    }
+
+    makeMove(move, 'O');
+
+    if (checkWinner(boardState, 'O')) {
+      message.textContent = `الكمبيوتر (O) فاز! 🎉`;
+      gameActive = false;
+      return;
+    }
+    if (checkDraw(boardState)) {
+      message.textContent = 'تعادل! 🤝';
+      gameActive = false;
+      playSound(drawSound);
+      return;
+    }
+
+    currentPlayer = 'X';
+    message.textContent = `دور اللاعب ${playerName} (X)`;
+  }
+
+  function findWinningMove(board, player) {
+    for (const idx of getAvailableMoves(board)) {
+      const copy = [...board];
+      copy[idx] = player;
+      if (checkWinner(copy, player)) return idx;
+    }
+    return null;
+  }
+
+  function minimax(newBoard, player) {
+    const huPlayer = 'X';
+    const aiPlayer = 'O';
+
+    const availSpots = getAvailableMoves(newBoard);
+
+    if (checkWinner(newBoard, huPlayer)) return {score: -10};
+    else if (checkWinner(newBoard, aiPlayer)) return {score: 10};
+    else if (availSpots.length === 0) return {score: 0};
+
+    let moves = [];
+
+    for (const i of availSpots) {
+      let move = {};
+      move.index = i;
+      newBoard[i] = player;
+
+      if (player === aiPlayer) {
+        const result = minimax(newBoard, huPlayer);
+        move.score = result.score;
       } else {
-        leaderboard = {};
+        const result = minimax(newBoard, aiPlayer);
+        move.score = result.score;
+      }
+
+      newBoard[i] = '';
+      moves.push(move);
+    }
+
+    let bestMove;
+    if (player === aiPlayer) {
+      let bestScore = -Infinity;
+      for (const move of moves) {
+        if (move.score > bestScore) {
+          bestScore = move.score;
+          bestMove = move;
+        }
+      }
+    } else {
+      let bestScore = Infinity;
+      for (const move of moves) {
+        if (move.score < bestScore) {
+          bestScore = move.score;
+          bestMove = move;
+        }
       }
     }
+    return bestMove;
+  }
 
-    // حفظ بيانات الترتيب في localStorage
-    function saveLeaderboard() {
-      localStorage.setItem('xo_leaderboard', JSON.stringify(leaderboard));
+  // تفعيل اللعبة
+  function startGame() {
+    boardState.fill('');
+    cells.forEach(c => c.textContent = '');
+    currentPlayer = 'X';
+    gameActive = true;
+    message.textContent = `دور اللاعب ${playerName} (X)`;
+  }
+
+  // إعادة تعيين اللعبة
+  function resetGame() {
+    if (!playerName) {
+      alert('من فضلك أدخل اسمك أولاً');
+      return;
     }
+    startGame();
+  }
 
-    // تحديث عرض جدول الترتيب
-    function updateLeaderboardDisplay() {
-      loadLeaderboard();
-      let entries = Object.entries(leaderboard);
-      // ترتيب تنازلي حسب عدد الفوز
-      entries.sort((a, b) => b[1] - a[1]);
-      leaderboardList.innerHTML = '';
-      if (entries.length === 0) {
-        leaderboardList.innerHTML = '<li>لا توجد بيانات بعد</li>';
+  // معالجة نقرة على الخانة
+  function handleClick(e) {
+    if (!gameActive) return;
+
+    const idx = +e.target.getAttribute('data-index');
+    if (boardState[idx] !== '') return;
+
+    if (mode === 'ai') {
+      if (currentPlayer !== 'X') return;
+      makeMove(idx, currentPlayer);
+      if (checkWinner(boardState, currentPlayer)) {
+        gameActive = false;
+        message.textContent = `${playerName} فاز! 🎉`;
+        leaderboard[playerName] = (leaderboard[playerName] || 0) + 1;
+        saveLeaderboard();
+        updateLeaderboardDisplay();
+        playSound(winSound);
         return;
       }
-      for (const [name, wins] of entries) {
-        const li = document.createElement('li');
-        li.textContent = `${name}`;
-        const span = document.createElement('span');
-        span.textContent = `فوز: ${wins}`;
-        li.appendChild(span);
-        leaderboardList.appendChild(li);
-      }
-    }
-
-    // تحقق من اسم اللاعب لتفعيل اللعبة
-    playerNameInput.addEventListener('input', () => {
-      const val = playerNameInput.value.trim();
-      if (val.length > 0) {
-        playerName = val;
-        message.textContent = `دور اللاعب ${playerName} (X)`;
-        resetBtn.disabled = false;
-        if (!gameActive) {
-          startGame();
-        }
-      } else {
-        message.textContent = 'أدخل اسمك ثم ابدأ اللعب!';
-        resetBtn.disabled = true;
+      if (checkDraw(boardState)) {
         gameActive = false;
+        message.textContent = 'تعادل! 🤝';
+        playSound(drawSound);
+        return;
       }
-    });
-
-    aiLevelSelect.addEventListener('change', () => {
-      aiLevel = aiLevelSelect.value;
-      resetGame();
-    });
-
-    function checkWinner(board, player) {
-      const winningConditions = [
-        [0,1,2],[3,4,5],[6,7,8],
-        [0,3,6],[1,4,7],[2,5,8],
-        [0,4,8],[2,4,6]
-      ];
-      return winningConditions.some(condition => {
-        return condition.every(index => board[index] === player);
-      });
-    }
-
-    function checkDraw(board) {
-      return board.every(cell => cell !== '');
-    }
-
-    function getAvailableMoves(board) {
-      return board.map((cell, idx) => cell === '' ? idx : null).filter(i => i !== null);
-    }
-
-    function makeMove(index, player) {
-      boardState[index] = player;
-      cells[index].textContent = player;
-    }
-
-    function handleClick(e) {
-      if (!gameActive) return;
-      if (currentPlayer !== 'X') return; // اللاعب البشري يلعب X فقط
-
-      const idx = parseInt(e.target.getAttribute('data-index'));
-      if (boardState[idx] !== '') return;
-
+      currentPlayer = 'O';
+      message.textContent = 'دور الكمبيوتر (O)';
+      setTimeout(() => aiMove(), 700);
+    } else {
+      // وضع ضد صديق
       makeMove(idx, currentPlayer);
-
       if (checkWinner(boardState, currentPlayer)) {
-        message.textContent = `اللاعب ${playerName} فاز! 🎉`;
-        gameActive = false;
-        updateLeaderboard(playerName);
+        gameOver(`اللاعب ${currentPlayer} فاز! 🎉`);
+        leaderboard[playerName] = (leaderboard[playerName] || 0) + 1;
+        saveLeaderboard();
         updateLeaderboardDisplay();
         return;
       }
-
       if (checkDraw(boardState)) {
+        gameActive = false;
         message.textContent = 'تعادل! 🤝';
-        gameActive = false;
+        playSound(drawSound);
         return;
       }
-
-      currentPlayer = 'O';
-      message.textContent = `دور اللاعب الكمبيوتر (O)`;
-
-      // حركة الكمبيوتر
-      setTimeout(() => {
-        aiMove();
-      }, 700);
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      message.textContent = `دور اللاعب ${currentPlayer}`;
     }
+  }
 
-    function aiMove() {
-      if (!gameActive) return;
-
-      let move;
-
-      if (aiLevel === 'easy') {
-        const available = getAvailableMoves(boardState);
-        move = available[Math.floor(Math.random() * available.length)];
-      } else if (aiLevel === 'medium') {
-        move = findWinningMove(boardState, 'O');
-        if (move === null) {
-          move = findWinningMove(boardState, 'X');
-        }
-        if (move === null) {
-          const available = getAvailableMoves(boardState);
-          move = available[Math.floor(Math.random() * available.length)];
-        }
-      } else {
-        move = minimax(boardState, 'O').index;
-      }
-
-      makeMove(move, 'O');
-
-      if (checkWinner(boardState, 'O')) {
-        message.textContent = `اللاعب الكمبيوتر (O) فاز! 🎉`;
-        gameActive = false;
-        return;
-      }
-
-      if (checkDraw(boardState)) {
-        message.textContent = 'تعادل! 🤝';
-        gameActive = false;
-        return;
-      }
-
-      currentPlayer = 'X';
+  // الاستماع لتغيير اسم اللاعب
+  playerNameInput.addEventListener('input', () => {
+    const val = playerNameInput.value.trim();
+    if (val.length > 0) {
+      playerName = val;
       message.textContent = `دور اللاعب ${playerName} (X)`;
+      resetBtn.disabled = false;
+      if (!gameActive) startGame();
+    } else {
+      message.textContent = 'أدخل اسمك ثم ابدأ اللعب!';
+      resetBtn.disabled = true;
+      gameActive = false;
     }
+  });
 
-    function findWinningMove(board, player) {
-      for (const idx of getAvailableMoves(board)) {
-        let copy = [...board];
-        copy[idx] = player;
-        if (checkWinner(copy, player)) {
-          return idx;
-        }
-      }
-      return null;
-    }
-
-    function minimax(newBoard, player) {
-      const huPlayer = 'X';
-      const aiPlayer = 'O';
-
-      const availSpots = getAvailableMoves(newBoard);
-
-      if (checkWinner(newBoard, huPlayer)) {
-        return {score: -10};
-      } else if (checkWinner(newBoard, aiPlayer)) {
-        return {score: 10};
-      } else if (availSpots.length === 0) {
-        return {score: 0};
-      }
-
-      let moves = [];
-
-      for (let i = 0; i < availSpots.length; i++) {
-        let move = {};
-        move.index = availSpots[i];
-        newBoard[availSpots[i]] = player;
-
-        if (player === aiPlayer) {
-          let result = minimax(newBoard, huPlayer);
-          move.score = result.score;
-        } else {
-          let result = minimax(newBoard, aiPlayer);
-          move.score = result.score;
-        }
-
-        newBoard[availSpots[i]] = '';
-
-        moves.push(move);
-      }
-
-      let bestMove;
-      if (player === aiPlayer) {
-        let bestScore = -Infinity;
-        for (let i=0; i<moves.length; i++) {
-          if (moves[i].score > bestScore) {
-            bestScore = moves[i].score;
-            bestMove = moves[i];
-          }
-        }
+  // الاستماع لتغيير وضع اللعب
+  modeRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      mode = document.querySelector('input[name="mode"]:checked').value;
+      // إظهار أو إخفاء اختيار مستوى AI
+      if (mode === 'ai') {
+        aiLevelSelect.parentElement.style.display = 'inline-block';
       } else {
-        let bestScore = Infinity;
-        for (let i=0; i<moves.length; i++) {
-          if (moves[i].score < bestScore) {
-            bestScore = moves[i].score;
-            bestMove = moves[i];
-          }
-        }
+        aiLevelSelect.parentElement.style.display = 'none';
       }
+      resetGame();
+    });
+  });
 
-      return bestMove;
-    }
+  // تغيير مستوى الذكاء الاصطناعي
+  aiLevelSelect.addEventListener('change', () => {
+    aiLevel = aiLevelSelect.value;
+    resetGame();
+  });
 
-    function updateLeaderboard(name) {
-      leaderboard[name] = (leaderboard[name] || 0) + 1;
-      saveLeaderboard();
-    }
+  // إعادة تعيين اللعبة عند الضغط على زر
+  resetBtn.addEventListener('click', resetGame);
 
-    function startGame() {
-      boardState.fill('');
-      cells.forEach(cell => cell.textContent = '');
-      currentPlayer = 'X';
-      gameActive = true;
-      message.textContent = `دور اللاعب ${playerName} (X)`;
-    }
+  // تهيئة عند بداية التحميل
+  loadLeaderboard();
+  updateLeaderboardDisplay();
+  aiLevelSelect.parentElement.style.display = 'inline-block';
 
-    function resetGame() {
-      if (!playerName) {
-        alert('من فضلك أدخل اسمك أولاً');
-        return;
-      }
-      startGame();
-    }
-
-    cells.forEach(cell => cell.addEventListener('click', handleClick));
-    resetBtn.addEventListener('click', resetGame);
-
-    // تهيئة
-    loadLeaderboard();
-    updateLeaderboardDisplay();
-
-  </script>
+  cells.forEach(cell => cell.addEventListener('click', handleClick));
+</script>
 
 </body>
-</html>
+  </html>
