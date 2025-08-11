@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ar" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>لعبة إكس أو - محمد المصري</title>
+  <style>
+    body {
+      margin: 0; padding: 0;
+      background: linear-gradient(135deg, #1e1e2f, #0d0d14);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #eee;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      min-height: 100vh;
+      user-select: none;
+      padding: 20px 0;
+    }
+    h1 {
+      margin-bottom: 5px;
+      color: #7b40ff;
+      text-shadow: 0 0 15px #d18aff;
+    }
+    #developer {
+      margin-bottom: 20px;
+      color: #d18aff;
+      font-weight: bold;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 120px);
+      grid-gap: 15px;
+      background: #2a2a3d;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px #7b40ff;
+      user-select: none;
+    }
+    .cell {
+      width: 120px; height: 120px;
+      background: linear-gradient(145deg, #1c1c2b, #313147);
+      border-radius: 15px;
+      font-size: 5rem;
+      color: #7b40ff;
+      display: flex; justify-content: center; align-items: center;
+      cursor: pointer;
+      box-shadow: 5px 5px 10px #151522, -5px -5px 10px #3a3a56;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    .cell:hover {
+      color: #d18aff;
+      box-shadow: 0 0 20px #d18aff;
+      transform: scale(1.05);
+      background: #3e3e59;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 1.4rem;
+      min-height: 40px;
+      text-align: center;
+      font-weight: bold;
+      text-shadow: 0 0 10px #d18aff;
+      user-select: none;
+    }
+    #resetBtn {
+      margin-top: 20px;
+      padding: 10px 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #7b40ff, #d18aff);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px #d18aff;
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+    #resetBtn:hover {
+      background: linear-gradient(135deg, #d18aff, #7b40ff);
+      box-shadow: 0 8px 25px #7b40ff;
+    }
+    #modeSelectContainer {
+      margin-top: 10px;
+      color: #d18aff;
+      font-weight: bold;
+      user-select: none;
+    }
+    #modeSelectContainer label {
+      margin-right: 15px;
+      cursor: pointer;
+      user-select: none;
+    }
+    #levelSelectContainer {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #d18aff;
+      user-select: none;
+    }
+    select {
+      background: #2a2a3d;
+      color: #eee;
+      border: none;
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-weight: 700;
+      box-shadow: inset 0 0 8px #7b40ff;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-left: 10px;
+      user-select: none;
+    }
+    #playerNameLabel {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #d18aff;
+      user-select: none;
+    }
+    #playerName {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: none;
+      width: 200px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 1rem;
+      background: #2a2a3d;
+      color: #eee;
+      box-shadow: inset 0 0 8px #7b40ff;
+      user-select: text;
+    }
+    #leaderboard {
+      margin-top: 30px;
+      width: 300px;
+      background: #2a2a3d;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 0 25px #7b40ff;
+      color: #d18aff;
+      font-weight: bold;
+      user-select: none;
+    }
+    #leaderboard h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #d18aff;
+      text-shadow: 0 0 15px #7b40ff;
+    }
+    #leaderboard ul {
+      list-style: none;
+      padding: 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    #leaderboard li {
+      padding: 6px 10px;
+      border-bottom: 1px solid #7b40ff66;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>لعبة إكس أو</h1>
+  <div id="developer">تطوير: محمد المصري</div>
+
+  <label id="playerNameLabel" for="playerName">
+    أدخل اسمك (اللاعب X):
+  </label>
+  <input id="playerName" type="text" placeholder="اكتب اسمك هنا" autocomplete="off"/>
+
+  <div id="modeSelectContainer" >
+    <label><input type="radio" name="mode" value="ai" checked /> ضد الكمبيوتر</label>
+    <label><input type="radio" name="mode" value="friend" /> ضد صديق</label>
+  </div>
+
+  <div id="levelSelectContainer">
+    اختر مستوى الذكاء الاصطناعي:
+    <select id="aiLevel">
+      <option value="easy">سهل</option>
+      <option value="medium" selected>متوسط</option>
+      <option value="hard">صعب</option>
+    </select>
+  </div>
+
+  <div id="board">
+    <div class="cell" data-index="0" tabindex="0"></div>
+    <div class="cell" data-index="1" tabindex="0"></div>
+    <div class="cell" data-index="2" tabindex="0"></div>
+    <div class="cell" data-index="3" tabindex="0"></div>
+    <div class="cell" data-index="4" tabindex="0"></div>
+    <div class="cell" data-index="5" tabindex="0"></div>
+    <div class="cell" data-index="6" tabindex="0"></div>
+    <div class="cell" data-index="7" tabindex="0"></div>
+    <div class="cell" data-index="8" tabindex="0"></div>
+  </div>
+
+  <div id="message">أدخل اسمك ثم ابدأ اللعب!</div>
+
+  <button id="resetBtn" disabled>إعادة اللعبة</button>
+
+  <div id="leaderboard">
+    <h2>جدول الترتيب</h2>
+    <ul id="leaderboardList"></ul>
+  </div>
+
+<script>
+  // عناصر
+  const cells = document.querySelectorAll('.cell');
+  const message = document.getElementById('message');
+  const resetBtn = document.getElementById('resetBtn');
+  const aiLevelSelect = document.getElementById('aiLevel');
+  const playerNameInput = document.getElementById('playerName');
+  const leaderboardList = document.getElementById('leaderboardList');
+  const modeRadios = document.querySelectorAll('input[name="mode"]');
+
+  // حالة اللعبة
+  let boardState = ['', '', '', '', '', '', '', '', ''];
+  let currentPlayer = 'X';
+  let gameActive = false;
+  let playerName = '';
+  let leaderboard = {};
+  let mode = 'ai'; // ai or friend
+  let aiLevel = 'medium';
+
+  // أصوات بسيطة
+  const clickSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+  const winSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+  const drawSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+
+  function playSound(sound) {
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+  }
+
+  // تحميل بيانات الترتيب
+  function loadLeaderboard() {
+    const data = localStorage.getItem('xo_leaderboard');
+    leaderboard = data ? JSON.parse(data) : {};
+  }
+
+  // حفظ بيانات الترتيب
+  function saveLeaderboard() {
+    localStorage.setItem('xo_leaderboard', JSON.stringify(leaderboard));
+  }
+
+  // تحديث عرض الترتيب
+  function updateLeaderboardDisplay() {
+    loadLeaderboard();
+    const entries = Object.entries(leaderboard).sort((a,b) => b[1]-a[1]);
+    leaderboardList.innerHTML = '';
+    if(entries.length === 0) {
+      leaderboardList.innerHTML = '<li>لا توجد بيانات بعد</li>';
+      return;
+    }
+    entries.forEach(([name, wins]) => {
+      const li = document.createElement('li');
+      li.textContent = name;
+      const span = document.createElement('span');
+      span.textContent = `فوز: ${wins}`;
+      li.appendChild(span);
+      leaderboardList.appendChild(li);
+    });
+  }
+
+  // تحقق من فوز
+  function checkWinner(board, player) {
+    const winningConditions = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+    return winningConditions.some(condition =>
+      condition.every(idx => board[idx] === player)
+    );
+  }
+
+  // تحقق تعادل
+  function checkDraw(board) {
+    return board.every(cell => cell !== '');
+  }
+
+  // تحركات فارغة
+  function getAvailableMoves(board) {
+    return board.map((c,i) => c === '' ? i : null).filter(i => i !== null);
+  }
+
+  // خطوة اللاعب
+  function makeMove(idx, player) {
+    boardState[idx] = player;
+    cells[idx].textContent = player;
+    playSound(clickSound);
+  }
+
+  // إنهاء اللعبة
+  function gameOver(text) {
+    gameActive = false;
+    message.textContent = text;
+    playSound(winSound);
+  }
+
+  // تحريك الكمبيوتر حسب المستوى
+  function aiMove() {
+    if (!gameActive) return;
+
+    let move;
+
+    if (aiLevel === 'easy') {
+      const available = getAvailableMoves(boardState);
+      move = available[Math.floor(Math.random() * available.length)];
+    } else if (aiLevel === 'medium') {
+      move = findWinningMove(boardState, 'O');
+      if (move === null) {
+        move = findWinningMove(boardState, 'X');
+      }
+      if (move === null) {
+        const available = getAvailableMoves(boardState);
+        move = available[Math.floor(Math.random() * available.length)];
+      }
+    } else { // hard
+      move = minimax(boardState, 'O').index;
+    }
+
+    makeMove(move, 'O');
+
+    if (checkWinner(boardState, 'O')) {
+      message.textContent = `الكمبيوتر (O) فاز! 🎉`;
+      gameActive = false;
+      return;
+    }
+    if (checkDraw(boardState)) {
+      message.textContent = 'تعادل! 🤝';
+      gameActive = false;
+      playSound(drawSound);
+      return;
+    }
+
+    currentPlayer = 'X';
+    message.textContent = `دور اللاعب ${playerName} (X)`;
+  }
+
+  function findWinningMove(board, player) {
+    for (const idx of getAvailableMoves(board)) {
+      const copy = [...board];
+      copy[idx] = player;
+      if (checkWinner(copy, player)) return idx;
+    }
+    return null;
+  }
+
+  function minimax(newBoard, player) {
+    const huPlayer = 'X';
+    const aiPlayer = 'O';
+
+    const availSpots = getAvailableMoves(newBoard);
+
+    if (checkWinner(newBoard, huPlayer)) return {score: -10};
+    else if (checkWinner(newBoard, aiPlayer)) return {score: 10};
+    else if (availSpots.length === 0) return {score: 0};
+
+    let moves = [];
+
+    for (const i of availSpots) {
+      let move = {};
+      move.index = i;
+      newBoard[i] = player;
+
+      if (player === aiPlayer) {
+        const result = minimax(newBoard, huPlayer);
+        move.score = result.score;
+      } else {
+        const result = minimax(newBoard, aiPlayer);
+        move.score = result.score;
+      }
+
+      newBoard[i] = '';
+      moves.push(move);
+    }
+
+    let bestMove;
+    if (player === aiPlayer) {
+      let bestScore = -Infinity;
+      for (const move of moves) {
+        if (move.score > bestScore) {
+          bestScore = move.score;
+          bestMove = move;
+        }
+      }
+    } else {
+      let bestScore = Infinity;
+      for (const move of moves) {
+        if (move.score < bestScore) {
+          bestScore = move.score;
+          bestMove = move;
+        }
+      }
+    }
+    return bestMove;
+  }
+
+  // تفعيل اللعبة
+  function startGame() {
+    boardState.fill('');
+    cells.forEach(c => c.textContent = '');
+    currentPlayer = 'X';
+    gameActive = true;
+    message.textContent = `دور اللاعب ${playerName} (X)`;
+  }
+
+  // إعادة تعيين اللعبة
+  function resetGame() {
+    if (!playerName) {
+      alert('من فضلك أدخل اسمك أولاً');
+      return;
+    }
+    startGame();
+  }
+
+  // معالجة نقرة على الخانة
+  function handleClick(e) {
+    if (!gameActive) return;
+
+    const idx = +e.target.getAttribute('data-index');
+    if (boardState[idx] !== '') return;
+
+    if (mode === 'ai') {
+      if (currentPlayer !== 'X') return;
+      makeMove(idx, currentPlayer);
+      if (checkWinner(boardState, currentPlayer)) {
+        gameActive = false;
+        message.textContent = `${playerName} فاز! 🎉`;
+        leaderboard[playerName] = (leaderboard[playerName] || 0) + 1;
+        saveLeaderboard();
+        updateLeaderboardDisplay();
+        playSound(winSound);
+        return;
+      }
+      if (checkDraw(boardState)) {
+        gameActive = false;
+        message.textContent = 'تعادل! 🤝';
+        playSound(drawSound);
+        return;
+      }
+      currentPlayer = 'O';
+      message.textContent = 'دور الكمبيوتر (O)';
+      setTimeout(() => aiMove(), 700);
+    } else {
+      // وضع ضد صديق
+      makeMove(idx, currentPlayer);
+      if (checkWinner(boardState, currentPlayer)) {
+        gameOver(`اللاعب ${currentPlayer} فاز! 🎉`);
+        leaderboard[playerName] = (leaderboard[playerName] || 0) + 1;
+        saveLeaderboard();
+        updateLeaderboardDisplay();
+        return;
+      }
+      if (checkDraw(boardState)) {
+        gameActive = false;
+        message.textContent = 'تعادل! 🤝';
+        playSound(drawSound);
+        return;
+      }
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      message.textContent = `دور اللاعب ${currentPlayer}`;
+    }
+  }
+
+  // الاستماع لتغيير اسم اللاعب
+  playerNameInput.addEventListener('input', () => {
+    const val = playerNameInput.value.trim();
+    if (val.length > 0) {
+      playerName = val;
+      message.textContent = `دور اللاعب ${playerName} (X)`;
+      resetBtn.disabled = false;
+      if (!gameActive) startGame();
+    } else {
+      message.textContent = 'أدخل اسمك ثم ابدأ اللعب!';
+      resetBtn.disabled = true;
+      gameActive = false;
+    }
+  });
+
+  // الاستماع لتغيير وضع اللعب
+  modeRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      mode = document.querySelector('input[name="mode"]:checked').value;
+      // إظهار أو إخفاء اختيار مستوى AI
+      if (mode === 'ai') {
+        aiLevelSelect.parentElement.style.display = 'inline-block';
+      } else {
+        aiLevelSelect.parentElement.style.display = 'none';
+      }
+      resetGame();
+    });
+  });
+
+  // تغيير مستوى الذكاء الاصطناعي
+  aiLevelSelect.addEventListener('change', () => {
+    aiLevel = aiLevelSelect.value;
+    resetGame();
+  });
+
+  // إعادة تعيين اللعبة عند الضغط على زر
+  resetBtn.addEventListener('click', resetGame);
+
+  // تهيئة عند بداية التحميل
+  loadLeaderboard();
+  updateLeaderboardDisplay();
+  aiLevelSelect.parentElement.style.display = 'inline-block';
+
+  cells.forEach(cell => cell.addEventListener('click', handleClick));
+</script>
+
+</body>
+  </html>
